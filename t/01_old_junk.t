@@ -1,7 +1,7 @@
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
-# Time-stamp: "2001-05-25 21:19:08 MDT"
+# Time-stamp: "2004-12-29 18:29:18 AST"
 
 use strict;
 use Test;
@@ -13,7 +13,7 @@ ok(1);
 #sub Sort::Naturally::DEBUG () {0}
 use Sort::Naturally;
 
-print " Perl v$], Sort::Naturally v$Sort::Naturally::VERSION\n\n";
+print "# Perl v$], Sort::Naturally v$Sort::Naturally::VERSION\n#\n";
 
 sub shuffle {
   my @out;
@@ -31,10 +31,10 @@ for(1 .. 10 ){
    )
   ;
   
-  print "\nIn: <@x>\n";
-  print " nsort ...\n";
+  print "#\n# In: <@x>\n";
+  print "# nsort ...\n";
   my @y =  nsort(map $_, @x);
-  print " ncmp ...\n";
+  print "# ncmp ...\n";
   my @z =  sort {&ncmp($a,$b)}
     # map $_, 
     @x
@@ -42,17 +42,17 @@ for(1 .. 10 ){
   #print "OK, <@x> => <@y>\n";
   print( 
    "@y" eq "@z"
-     ? scalar(ok(1), "  Good, eq") : scalar(ok(0), "  Feh, NE!\n< <@x>"), 
-   "\n  <@y>\n :<@z>\n"
+     ? scalar(ok(1), "#  Good, eq") : scalar(ok(0), "#  Feh, NE!\n< <@x>"), 
+   "\n#  <@y>\n# :<@z>\n"
   );
   if("@y" eq $ok1) {
     ok 1;
-    print " sorts happily as ok1 <$ok1>\n";
+    print "# sorts happily as ok1 <$ok1>\n";
   } elsif("@y" eq $ok2) {
     ok 1;
-    print " sorts happily as ok2 <$ok2>\n";
+    print "# sorts happily as ok2 <$ok2>\n";
   } else {
     ok 0;
-    print " sorts unhappily, not as <$ok1> nor as <$ok2>\n";
+    print "# sorts unhappily, not as <$ok1> nor as <$ok2>\n";
   }
 }
