@@ -7,3 +7,4 @@ README
 t/00_about_verbose.t
 t/01_old_junk.t
 META.yml                                 Module meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)

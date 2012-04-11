@@ -1,7 +1,7 @@
 
 require 5;
 package Sort::Naturally;  # Time-stamp: "2004-12-29 18:30:03 AST"
-$VERSION = '1.02';
+$VERSION = '1.03';
 @EXPORT = ('nsort', 'ncmp');
 require Exporter;
 @ISA = ('Exporter');
@@ -55,24 +55,24 @@ $guts = <<'EOGUTS';  # This is the guts of both ncmp and nsort:
     } else {
       $rv = 0;
     }
-    
+
     unless($rv) {
       # Normal case:
       $rv = 0;
       DEBUG and print "<$x> and <$y> compared...\n";
-      
+
      Consideration:
       while(length $x and length $y) {
-      
+
         DEBUG > 2 and print " <$x> and <$y>...\n";
-        
+
         # First, non-numeric comparison:
         $x2 = ($x =~ m/^(\D+)/s) ? length($1) : 0;
         $y2 = ($y =~ m/^(\D+)/s) ? length($1) : 0;
         # Now make x2 the min length of the two:
         $x2 = $y2 if $x2 > $y2;
         if($x2) {
-          DEBUG > 1 and printf " <%s> and <%s> lexically for length $x2...\n", 
+          DEBUG > 1 and printf " <%s> and <%s> lexically for length $x2...\n",
             substr($x,0,$x2), substr($y,0,$x2);
           do {
            my $i = substr($x,0,$x2);
@@ -81,10 +81,10 @@ $guts = <<'EOGUTS';  # This is the guts of both ncmp and nsort:
            print "SCREAM! on <$i><$j> -- $sv != $rv \n" unless $rv == $sv;
            last;
           }
-          
-          
+
+
            if $rv =
-           # The ''. things here force a copy that seems to work around a 
+           # The ''. things here force a copy that seems to work around a
            #  mysterious intermittent bug that 'use locale' provokes in
            #  many versions of Perl.
                    $cmp
@@ -100,7 +100,7 @@ $guts = <<'EOGUTS';  # This is the guts of both ncmp and nsort:
           substr($x,0,$x2) = '';
           substr($y,0,$x2) = '';
         }
-        
+
         # Now numeric:
         #  (actually just using $x2 and $y2 as scratch)
 
@@ -114,12 +114,12 @@ $guts = <<'EOGUTS';  # This is the guts of both ncmp and nsort:
               last if $rv = $x2 <=> $1;
             } else {
               # ARBITRARILY large integers!
-              
+
               # This saves on loss of precision that could happen
               #  with actual stringification.
               # Also, I sense that very large numbers aren't too
               #  terribly common in sort data.
-              
+
               # trim leading 0's:
               ($y2 = $1) =~ s/^0+//s;
               $x2 =~ s/^0+//s;
@@ -138,7 +138,7 @@ $guts = <<'EOGUTS';  # This is the guts of both ncmp and nsort:
             # X is numeric but Y isn't
             $rv = Y_FIRST;
             last;
-          }        
+          }
         } elsif( $y =~ s/^\d+//s ) {  # we don't need to capture the substring
           $rv = X_FIRST;
           last;
@@ -166,7 +166,7 @@ sub nsort {
   ($cmp,$lc) = @{shift @_} if @_ and ref($_[0]) eq 'ARRAY';
 
   return @_ unless @_ > 1 or wantarray; # be clever
-  
+
   my($x, $x2, $y, $y2, $rv);  # scratch vars
 
   # We use a Schwartzian xform to memoize the lc'ing and \W-removal
@@ -175,7 +175,7 @@ sub nsort {
   sort {
     if($a->[0] eq $b->[0]) { 0 }   # trap this expensive case
     else {
-    
+
     $x = $a->[1];
     $y = $b->[1];
 
@@ -188,7 +188,7 @@ sub nsort {
         ||  ($x      cmp $y     )
         ||  ($a->[0] cmp $b->[0])
     ;
-    
+
     DEBUG > 1 and print "  <${$a}[0]> cmp <${$b}[0]> is $rv ($ORD[$rv])\n";
     $rv;
   }}
@@ -220,7 +220,7 @@ sub ncmp {
   }
   my($a,$b) = @_;
   my($x, $x2, $y, $y2, $rv);  # scratch vars
-  
+
   DEBUG > 1 and print "ncmp args <$a><$b>\n";
   if($a eq $b) { # trap this expensive case
     0;
@@ -229,7 +229,7 @@ sub ncmp {
     $x =~ s/\W+//s;
     $y = ($lc ? $lc->($b) : lc($b));
     $y =~ s/\W+//s;
-    
+
 ~COMPARATOR~
 
 
@@ -240,7 +240,7 @@ sub ncmp {
         ||  ($x cmp $y)
         ||  ($a cmp $b)
     ;
-    
+
     DEBUG > 1 and print "  <$a> cmp <$b> is $rv\n";
     $rv;
   }
@@ -391,7 +391,7 @@ Often, when sorting non-string values like this:
      map { [$_, make_a_sort_key_from($_) ]
      @_
    ;
-   
+
 ...you wight want something that replaces not C<sort>, but C<cmp>.
 That's what Sort::Naturally's C<ncmp> function is for.  Call it with
 the syntax C<ncmp($left,$right)> instead of C<$left cmp $right>,
@@ -503,11 +503,11 @@ Sean M. Burke C<sburke@cpan.org>
 sub nsort {
   my($cmp, $lc);
   return @_ if @_ < 2;   # Just to be CLEVER.
-  
+
   my($x, $i);  # scratch vars
-  
+
   # And now, the GREAT BIG Schwartzian transform:
-  
+
   map
     $_->[0],
 
@@ -542,7 +542,7 @@ sub nsort {
 
   map {
     my @bit = ($x = defined($_) ? $_ : '');
-    
+
     if($x =~ m/^[+-]?(?=\d|\.\d)\d*(?:\.\d*)?(?:[Ee](?:[+-]?\d+))?\z/s) {
       # It's entirely purely numeric, so treat it specially:
       push @bit, '', $x;
@@ -565,7 +565,7 @@ sub nsort {
     #    ['foo32.pl'   => 'foo',  32,   , '.pl', 0 ]
     #    ['foo325.pl'  => 'foo', 325,   , '.pl', 0 ]
     #  Yes, always an ODD number of elements.
-    
+
     \@bit;
   }
   @_;
@@ -576,11 +576,11 @@ sub nsort {
 
 sub nsorts {
   return @_ if @_ < 2;   # Just to be CLEVER.
-  
+
   my($x, $i);  # scratch vars
-  
+
   # And now, the GREAT BIG Schwartzian transform:
-  
+
   map
     $_->[0],
 
@@ -615,7 +615,7 @@ sub nsorts {
 
   map {
     my @bit = ($x = defined($_) ? $_ : '');
-    
+
     while(length $x) {
       push @bit, ($x =~ s/^(\D+)//s) ? lc($1) : '';
       push @bit, ($x =~ s/^(\d+)//s) ?    $1  :  0;
@@ -632,7 +632,7 @@ sub nsorts {
     #    ['foo32.pl'   => 'foo',  32,   , '.pl', 0 ]
     #    ['foo325.pl'  => 'foo', 325,   , '.pl', 0 ]
     #  Yes, always an ODD number of elements.
-    
+
     \@bit;
   }
   @_;
@@ -643,11 +643,11 @@ sub nsorts {
 
 sub nsort0 {
   return @_ if @_ < 2;   # Just to be CLEVER.
-  
+
   my($x, $i);  # scratch vars
-  
+
   # And now, the GREAT BIG Schwartzian transform:
-  
+
   map
     $_->[0],
 
@@ -682,7 +682,7 @@ sub nsort0 {
 
   map {
     my @bit = ($x = defined($_) ? $_ : '');
-    
+
     if($x =~ m/^[+-]?(?=\d|\.\d)\d*(?:\.\d*)?(?:[Ee](?:[+-]?\d+))?\z/s) {
       # It's entirely purely numeric, so treat it specially:
       push @bit, '', $x;
@@ -703,7 +703,7 @@ sub nsort0 {
       }
     }
     DEBUG and print "$bit[0] => ", map("{$_} ", @bit), "\n";
-    
+
     \@bit;
   }
   @_;
@@ -715,11 +715,11 @@ sub nsort0 {
 
 sub nsortf {
   return @_ if @_ < 2;   # Just to be CLEVER.
-  
+
   my($x, $i);  # scratch vars
-  
+
   # And now, the GREAT BIG Schwartzian transform:
-  
+
   map
     $_->[0],
 
@@ -749,20 +749,20 @@ sub nsortf {
     $x || (@$a     <=> @$b    ) || ($a->[1] cmp $b->[1])
        || ($a->[2] <=> $b->[2]) || ($a->[0] cmp $b->[0]);
       # unless we found a result for $x in the while loop,
-      #  use length as a tiebreaker, otherwise use the 
+      #  use length as a tiebreaker, otherwise use the
       #  lc'd extension, otherwise the verison, otherwise use
       #  the original string as a fallback tiebreaker.
   }
 
   map {
     my @bit = ( ($x = defined($_) ? $_ : ''), '',0 );
-    
+
     {
       # Consume the string.
-      
+
       # First, pull off any VAX-style version
       $bit[2] = $1 if $x =~ s/;(\d+)$//;
-      
+
       # Then pull off any apparent extension
       if( $x !~ m/^\.+$/s and     # don't mangle ".", "..", or "..."
           $x =~ s/(\.[^\.\;]*)$//sg
@@ -800,9 +800,9 @@ sub nsortf {
         }
       }
     }
-    
+
     DEBUG and print "$bit[0] => ", map("{$_} ", @bit), "\n";
-    
+
     \@bit;
   }
   @_;

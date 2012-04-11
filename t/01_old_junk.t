@@ -30,19 +30,19 @@ for(1 .. 10 ){
     foo12a foo12z foo13a foo 14 9x foo12 fooa foolio Foolio Foo12a
    )
   ;
-  
+
   print "#\n# In: <@x>\n";
   print "# nsort ...\n";
   my @y =  nsort(map $_, @x);
   print "# ncmp ...\n";
   my @z =  sort {&ncmp($a,$b)}
-    # map $_, 
+    # map $_,
     @x
   ;
   #print "OK, <@x> => <@y>\n";
-  print( 
+  print(
    "@y" eq "@z"
-     ? scalar(ok(1), "#  Good, eq") : scalar(ok(0), "#  Feh, NE!\n< <@x>"), 
+     ? scalar(ok(1), "#  Good, eq") : scalar(ok(0), "#  Feh, NE!\n< <@x>"),
    "\n#  <@y>\n# :<@z>\n"
   );
   if("@y" eq $ok1) {
